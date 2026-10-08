@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Engineer Crisis Quest</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --panel: #131a2c;
+            --accent: #10b981; /* Neon green */
+            --danger: #ef4444;
+            --text: #f3f4f6;
+            --text-mute: #64748b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
+        .game-box { width: 100%; max-width: 500px; background: var(--panel); border: 2px solid #1e293b; border-radius: 20px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; position: relative; overflow: hidden; }
+        
+        /* Game Stats Dashboard */
+        .stats-dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; background: #090d16; padding: 12px; border-radius: 12px; border: 1px solid #1e293b; }
+        .stat-item { font-size: 0.85rem; font-weight: bold; text-align: left; }
+        .stat-bar-bg { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; margin-top: 4px; overflow: hidden; }
+        .stat-bar-fill { height: 100%; width: 50%; background: var(--accent); transition: all 0.4s ease; }
+        
+        .badge { background: rgba(16, 185, 129, 0.1); color: var(--accent); padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: inline-block; margin-bottom: 15px; letter-spacing: 0.05em; }
+        h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
+        p { font-size: 1rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 25px; text-align: left; }
+        
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+        .option-card { background: #1e293b; border: 1px solid #334155; color: var(--text); padding: 16px; border-radius: 12px; font-size: 0.95rem; text-align: left; cursor: pointer; transition: all 0.2s ease; position: relative; font-weight: 500; }
+        .option-card:hover { border-color: var(--accent); background: #24324d; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.1); }
+        
+        /* Inputs & Gating */
+        .input-field { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #334155; background: #090d16; color: white; font-size: 1rem; margin-bottom: 15px; }
+        .input-field:focus { outline: none; border-color: var(--accent); }
+        .cta-btn { background: var(--accent); color: #090d16; font-weight: 700; border: none; width: 100%; padding: 16px; border-radius: 10px; font-size: 1.1rem; cursor: pointer; transition: background 0.2s; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.02em; }
+        .cta-btn:hover { background: #059669; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="game-box">
+    <!-- STATS (Hidden on Intro and Outro) -->
+    <div id="dashboard" class="stats-dashboard hidden">
+        <div class="stat-item">
+            🤖 AI ACCURACY: <span id="val-accuracy">50%</span>
+            <div class="stat-bar-bg"><div id="bar-accuracy" class="stat-bar-fill" style="width: 50%;"></div></div>
+        </div>
+        <div class="stat-item">
+            ❤️ USER HAPPINESS: <span id="val-happy">50%</span>
+            <div class="stat-bar-bg"><div id="bar-happy" class="stat-bar-fill" style="width: 50%; background: #38bdf8;"></div></div>
+        </div>
+    </div>
+
+    <!-- STAGE 0: INTRO -->
+    <div id="state-intro">
+        <span class="badge">Live Simulation</span>
+        <h1>🚨 AI ENGINEER: CRISIS MODE</h1>
+        <p><strong>The Setup:</strong> You are the Lead AI Developer at a top Indian food delivery app during the <strong>IPL Final night</strong>. Over 10 Lakh hungry fans are ordering simultaneously, causing your automated food delivery routing AI to freak out and glitch! Delivery times are climbing to 90 minutes. <strong>Management is panicking. Can you save the night?</strong></p>
+        <button class="cta-btn" onclick="startGame()">Launch Terminal</button>
+    </div>
+
+    <!-- STAGE 1 -->
+    <div id="state-s1" class="hidden">
+        <span class="badge">Crisis Event 1</span>
+        <h1>The Data Bottleneck</h1>
+        <p>Your routing model is crashing because it wasn't trained on heavy monsoon rain data, and a massive storm just hit Mumbai mid-game. Orders are piling up. What's your immediate fix?</p>
+        <div class="options-list">
+            <button class="option-card" onclick="makeChoice('s1', 's2', 20, -15)"><strong>Option A: Strip down the AI features.</strong> Turn off live GPS tracking adjustments and switch to generic zip-code routing. (Speeds up system, but deliveries get less accurate)</button>
+            <button class="option-card" onclick="makeChoice('s1', 's2', -10, 25)"><strong>Option B: Keep full machine tracking active.</strong> Let the servers bottleneck while your code tries to clean the messy rain data in real-time. (Keeps pathing perfect, but causes heavy checkout delays)</button>
+        </div>
+    </div>
+
+    <!-- STAGE 2 -->
+    <div id="state-s2" class="hidden">
+        <span class="badge">Crisis Event 2</span>
+        <h1>The Algorithmic Bias</h1>
+        <p>The AI is working again, but a bias bug emerges: The algorithm is prioritising high-value corporate party orders and completely ignoring smaller local colony orders. Standard users are leaving angry 1-star reviews. How do you handle this bias?</p>
+        <div class="options-list">
+            <button class="option-card" onclick="makeChoice('s2', 's3', 25, -20)"><strong>Option A: Re-engineer fairness models immediately.</strong> Inject a patch into the live system to balance orders equally. (Fixes ethical balance, but drops immediate company revenue)</button>
+            <button class="option-card" onclick="makeChoice('s2', 's3', -15, 20)"><strong>Option B: Override the complaints.</strong> Keep the high-revenue prioritization running until the IPL match ends at midnight, then fix it later. (Maximizes profit, but burns local user loyalty)</button>
+        </div>
+    </div>
+
+    <!-- STAGE 3 -->
+    <div id="state-s3" class="hidden">
+        <span class="badge">Final Choice</span>
+        <h1>The Scaling Decision</h1>
+        <p>The match is in the final over! The server load is at 99%. Your current neural network model is too heavy. To keep the app online for the next 20 minutes, you must make a critical choice:</p>
+        <div class="options-list">
+            <button class="option-card" onclick="makeChoice('s3', 'end', 15, -10)"><strong>Option A: Compress the AI network.</strong> Reduce the processing precision by 10% to cut the server load in half instantly.</button>
+            <button class="option-card" onclick="makeChoice('s3', 'end', -20, 20)"><strong>Option B: Rent emergency cloud servers.</strong> Keep the massive, hyper-precise model running, but spend huge company funds instantly to scale the hardware infrastructure.</button>
+        </div>
+    </div>
+
+    <!-- STAGE 4: END & CAPTURE -->
+    <div id="state-end" class="hidden">
+        <h1>🎮 Quest Complete!</h1>
+        <p>Your architectural problem-solving profile has been computed based on your live metric choices.</p>
+        
+        <div style="background: #090d16; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #1e293b;">
+            <p style="margin: 0; font-size: 1.1rem; text-align: center;">Your Archetype: <strong id="final-archetype" style="color: var(--accent);"></strong></p>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-mute); margin-bottom: 15px;">As a **Paid Pass Holder**, your full detailed 3-page Stream Blueprint & Target Entrance Exam Matrix (JEE/CUET pathways) is ready to generate. Enter your details below to deliver the finalized analysis straight to your parent's WhatsApp.</p>
+        
+        <form action="YOUR_FORMSPREE_ENDPOINT_HERE" method="POST">
+            <input type="hidden" name="Archetype Result" id="hidden-arch">
+            <input type="text" name="Student Name" class="input-field" placeholder="Student's Name" required>
+            <input type="text" name="Grade" class="input-field" placeholder="Current Class (e.g. Class 10)" required>
+            <input type="tel" name="Parent Contact" class="input-field" placeholder="Parent's WhatsApp Number" required>
+            <button type="submit" class="cta-btn">Send Analysis to WhatsApp</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    let accuracy = 50;
+    let happiness = 50;
+
+    function startGame() {
+        document.getElementById('state-intro').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        document.getElementById('state-s1').classList.remove('hidden');
+    }
+
+    function updateBars() {
+        // Enforce boundaries
+        accuracy = Math.max(10, Math.min(95, accuracy));
+        happiness = Math.max(10, Math.min(95, happiness));
+        
+        document.getElementById('val-accuracy').innerText = accuracy + "%";
+        document.getElementById('bar-accuracy').style.width = accuracy + "%";
+        
+        document.getElementById('val-happy').innerText = happiness + "%";
+        document.getElementById('bar-happy').style.width = happiness + "%";
+    }
+
+    function makeChoice(currState, nextState, accMod, hapMod) {
+        accuracy += accMod;
+        happiness += hapMod;
+        updateBars();
+        
+        document.getElementById('state-' + currState).classList.add('hidden');
+        document.getElementById('state-' + nextState).classList.remove('hidden');
+        
+        if (nextState === 'end') {
