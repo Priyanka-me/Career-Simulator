@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Core: System Terminal</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Share Tech Mono', monospace; }
+        body { background-color: #030712; color: #10b981; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 15px; overflow-x: hidden; }
+        
+        /* CRT Screen Monitor Effect */
+        .terminal-screen { width: 100%; max-width: 520px; background: #070b19; border: 3px solid #10b981; border-radius: 12px; padding: 25px; box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), inset 0 0 15px rgba(0,0,0,0.9); position: relative; }
+        .terminal-screen::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none; }
+        
+        /* Glitchy Headers */
+        .system-title { font-size: 1.6rem; color: #fff; text-shadow: 0 0 8px #10b981; margin-bottom: 15px; border-bottom: 2px dashed #10b981; padding-bottom: 8px; text-transform: uppercase; }
+        
+        /* Live Stat Displays */
+        .hud-display { display: flex; justify-content: space-between; margin-bottom: 20px; background: rgba(16, 185, 129, 0.05); padding: 10px; border: 1px solid #10b981; font-size: 0.9rem; }
+        .hud-val { color: #fff; font-weight: bold; }
+        
+        /* Terminal Text Window */
+        .log-window { min-height: 120px; text-align: left; margin-bottom: 25px; font-size: 1.05rem; line-height: 1.5; color: #a7f3d0; }
+        
+        /* Action Toggles */
+        .choice-pane { display: flex; flex-direction: column; gap: 12px; }
+        .action-node { background: transparent; border: 1px solid #10b981; color: #10b981; padding: 14px 18px; border-radius: 6px; font-size: 0.95rem; text-align: left; cursor: pointer; transition: all 0.15s ease; }
+        .action-node:hover { background: #10b981; color: #030712; box-shadow: 0 0 12px rgba(16, 185, 129, 0.5); transform: scale(1.01); }
+        
+        /* Form Inputs */
+        .terminal-input { width: 100%; padding: 12px; background: #030712; border: 1px solid #10b981; color: #fff; font-family: inherit; font-size: 1rem; margin-bottom: 15px; }
+        .terminal-input:focus { outline: none; box-shadow: 0 0 8px rgba(16, 185, 129, 0.5); }
+        .hidden { display: none; }
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+<!-- AUDIO ENGINE SOURCE LINKS -->
+<audio id="snd-bg" loop src="https://mixkit.co"></audio>
+<audio id="snd-click" src="https://mixkit.co"></audio>
+<audio id="snd-alert" src="https://mixkit.co"></audio>
+
+<div class="terminal-screen">
+    <!-- SYSTEM STATS METRIC DISPLAY -->
+    <div id="hud" class="hud-display hidden">
+        <div>[SYS_INTEGRITY: <span id="hud-acc" class="hud-val">50%</span>]</div>
+        <div>[USER_SATISFACTION: <span id="hud-hap" class="hud-val">50%</span>]</div>
+    </div>
+
+    <!-- INITIALIZATION INTERFACE -->
+    <div id="panel-start">
+        <h1 class="system-title">> INITIALIZE: CORE_AI_QUEST</h1>
+        <div class="log-window">
+            STATUS: CRITICAL.<br><br>
+            Mumbai is facing an intense storm mid-IPL Final. Over 1,000,000 active users are crashing the routing engine servers. Systems are lagging. Delivery run times are jumping to 90 minutes.<br><br>
+            <span class="blink">CRITICAL CHOICE REQUIRED TO RE-ROUTE SYSTEM PROTOCOLS...</span>
+        </div>
+        <button class="action-node" style="width:100%; text-align:center;" onclick="bootSystem()">BOOT CORE INTERFACE</button>
+    </div>
+
+    <!-- LEVEL 1: TERMINAL RUN 1 -->
+    <div id="panel-l1" class="hidden">
+        <h1 class="system-title">> PATHING_CONFLICT // MONSOON_RAIN</h1>
+        <div class="log-window" id="text-l1"></div>
+        <div class="choice-pane">
+            <button class="action-node" onclick="submitNode('l1', 'l2', 25, -15)">> ALTERNATIVE A: COMPRESS NEURAL NETWORKS (Drops pathing data accuracy, stabilizes server processing speeds)</button>
+            <button class="action-node" onclick="submitNode('l1', 'l2', -15, 25)">> ALTERNATIVE B: FORCE LIVE ENGINE COMPUTATION (Sustains pathing accuracy, triggers heavy server latency queues)</button>
+        </div>
+    </div>
+
+    <!-- LEVEL 2: TERMINAL RUN 2 -->
+    <div id="panel-l2" class="hidden">
+        <h1 class="system-title">> DETECTED_BIAS // REVENUE_LEAK</h1>
+        <div class="log-window" id="text-l2"></div>
+        <div class="choice-pane">
+            <button class="action-node" onclick="submitNode('l2', 'end', -20, 25)">> OVERRIDE A: RUN REVENUE BIAS INJECTORS (Prioritize premium bulk corporate orders, bypass residential queues)</button>
+            <button class="action-node" onclick="submitNode('l2', 'end', 25, -20)">> OVERRIDE B: INITIALIZE FAIRNESS PATCHES (Enforce equal queuing matrix, drops instant billing metrics)</button>
+        </div>
+    </div>
+
+    <!-- OUTRO PORTAL SUMMARY -->
+    <div id="panel-end" class="hidden">
+        <h1 class="system-title">> CALCULATION_COMPLETE // PROFILE_LOCKED</h1>
+        <div class="log-window">
+            SYSTEM ENGINE ANALYSIS LOCKED.<br><br>
+            Calculated Core Architectural Profile: <span id="arch-out" style="color:#fff; text-shadow: 0 0 5px #fff;"></span><br><br>
+            Verification reports are ready to route to database nodes. Input verification vectors below to deliver the finalized multi-page career alignment portfolio to parent server branches.
+        </div>
+        <form action="YOUR_FORMSPREE_ENDPOINT_HERE" method="POST">
+            <input type="hidden" name="System Profile" id="data-arch">
+            <input type="text" name="Name" class="terminal-input" placeholder="STUDENT_NAME" required>
+            <input type="text" name="Grade" class="terminal-input" placeholder="ACADEMIC_GRADE" required>
+            <input type="tel" name="Contact" class="terminal-input" placeholder="PARENT_WHATSAPP_NODE" required>
+            <button type="submit" class="action-node" style="width:100%; text-align:center;">TRANSMIT REPORT ARTIFACTS</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    let acc = 50; let hap = 50;
+    const txt1 = "SYSTEM DIAGNOSTIC: Core engine modules are overheating under the rain data anomaly load. Delivery track calculations are processing out of sync. Choose system operational priorities:";
+    const txt2 = "ALERT: Algorithmic bias loop identified. Machine modules are automatically shifting priority to high-cost corporate packages to maximize transactional margins, locking out smaller consumer routes. Select system patch vector:";
+
+    function playSnd(id) { document.getElementById(id).currentTime = 0; document.getElementById(id).play().catch(()=>{}); }
+    
+    function typeEffect(elementId, text, speed, callback) {
+        let i = 0; const el = document.getElementById(elementId); el.innerHTML = "";
+        function type() {
+            if (i < text.length) { el.innerHTML += text.charAt(i); i++; setTimeout(type, speed); }
+            else if (callback) { callback(); }
+        }
+        type();
+    }
+
+    function bootSystem() {
+        playSnd('snd-click'); playSnd('snd-bg');
+        document.getElementById('panel-start').classList.add('hidden');
+        document.getElementById('hud').classList.remove('hidden');
+        document.getElementById('panel-l1').classList.remove('hidden');
+        typeEffect('text-l1', txt1, 15);
+    }
+
+    function submitNode(curr, next, accMod, hapMod) {
+        playSnd('snd-alert');
+        acc = Math.max(15, Math.min(95, acc + accMod));
+        hap = Math.max(15, Math.min(95, hap + hapMod));
+        
+        document.getElementById('hud-acc').innerText = acc + "%";
+        document.getElementById('hud-hap').innerText = hap + "%";
+        
+        document.getElementById('panel-' + curr).classList.add('hidden');
+        document.getElementById('panel-' + next).classList.remove('hidden');
+        
+        if (next === 'l2') { typeEffect('text-l2', txt2, 15); }
+        if (next === 'end') {
+            document.getElementById('hud').classList.add('hidden');
+            let arch = acc > hap ? "ROUTING-OPTIMIZED ALGORITHMIC ENGINEER" : "HUMAN-CENTRIC CODE SYSTEM ARCHITECT";
+            document.getElementById('arch-out').innerText = arch;
+            document.getElementById('data-arch').value = arch;
+        }
+    }
+</script>
+</body>
+</html>
